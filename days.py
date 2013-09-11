@@ -31,3 +31,12 @@ def get_bbc_on_this_day_urls_for_whole_year():
             url = 'http://news.bbc.co.uk/onthisday/low/dates/stories/{0}/{1}/default.stm'.format(month.lower(), day)
             urls.append(url)
     return urls
+
+
+def get_nytimes_on_this_day_urls_for_whole_year():
+    urls = []
+    for month, days in MONTHS.items():
+        for day in xrange(1, days + 1):
+            url = 'http://learning.blogs.nytimes.com/on-this-day/{0}-{1}/'.format(month, day)
+            urls.append(url)
+    return urls
