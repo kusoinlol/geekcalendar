@@ -8,6 +8,6 @@ class CrawlerPipeline(object):
         self.db = self.client.geekcalendar
         
     def process_item(self, item, spider):
-        self.db.days.insert(dict(item)) 
+        self.db.events.insert(dict(item)) 
         return item
 

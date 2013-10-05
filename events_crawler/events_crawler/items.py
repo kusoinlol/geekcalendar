@@ -1,7 +1,9 @@
 from scrapy.item import Item, Field
 
 
-class DayItem(Item):
-    day = Field()
-    events = Field()
+class EventItem(Item):
+    event_date = Field()
+    short_description = Field()
+    full_description = Field()
+    related_links = Field()
 
