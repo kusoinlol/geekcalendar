@@ -12,6 +12,7 @@ WIKIPEDIA_START_URLS = utils.get_wikipedia_urls_for_whole_year()
 WIKIPEDIA_START_URLS = ["https://en.wikipedia.org/wiki/October_1", ]
 
 HEADLINES_OF_INTEREST = ['Events', 'Births', 'Deaths', ]
+HEADLINES_OF_INTEREST = ['Events', 'Deaths', ]
 
 
 class WikipediaEventsSpider(BaseSpider):
@@ -28,33 +29,39 @@ class WikipediaEventsSpider(BaseSpider):
 
         events = []
         for headline in headlines:
+            
             headline_type = headline.select('span[@class="mw-headline"]/text()').extract()[0]
-
+            
             if headline_type in HEADLINES_OF_INTEREST:
                 lines = headline.select('following-sibling::ul/li')
                 for line in lines:
                     event = EventItem()
 
                     short_description = ''.join(line.select('text()|a/text()').extract())
-                    event['short_description'] = short_description
-
-                    if 'BC' in short_description:
-                        # Ignoring BC dates
-                        continue
 
                     try:
                         event_year = int(short_description[:4])
                     except ValueError:
                         continue
 
-                    if event_year < 1000:
-                        # strptime with years lower than 1000 doesnt work
-                        # need to find a way to fix it
+                    if headline_type == 'Births':
+                        short_description = short_description[9:]
+                        short_description = 'Birth of ' + short_description
+
+                    if headline_type == 'Deaths':
+                        short_description = short_description[9:]
+                        short_description = 'Death of ' + short_description
+                
+                    event['short_description'] = short_description
+
+                    if 'BC' in short_description or event_year < 1000:
+                        # Ignoring BC dates and lower than 1000 beacuse
+                        # strptime doesnt work well in this cases
                         continue
 
                     raw_complete_date = "{0} {1}".format(raw_day, event_year)
                     event['event_date'] = datetime.strptime(raw_complete_date, "%B %d %Y")
-                    # event['type'] = headline_type
+
                     event['related_links'] = line.select('a/@href').extract()
                     event['random'] = random.random()
 
