@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import random
 
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
@@ -55,6 +56,8 @@ class WikipediaEventsSpider(BaseSpider):
                     event['event_date'] = datetime.strptime(raw_complete_date, "%B %d %Y")
                     # event['type'] = headline_type
                     event['related_links'] = line.select('a/@href').extract()
-                    
+                    event['random'] = random.random()
+
                     events.append(event)
+
         return events

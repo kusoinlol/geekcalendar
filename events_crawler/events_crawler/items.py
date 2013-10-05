@@ -7,3 +7,5 @@ class EventItem(Item):
     full_description = Field()
     related_links = Field()
 
+    random = Field()  # Used to retrieve documents randomly
+
