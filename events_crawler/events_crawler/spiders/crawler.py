@@ -9,10 +9,8 @@ from events_crawler.items import EventItem
 from events_crawler.spiders import utils
 
 WIKIPEDIA_START_URLS = utils.get_wikipedia_urls_for_whole_year()
-WIKIPEDIA_START_URLS = ["https://en.wikipedia.org/wiki/October_1", ]
 
 HEADLINES_OF_INTEREST = ['Events', 'Births', 'Deaths', ]
-HEADLINES_OF_INTEREST = ['Events', 'Deaths', ]
 
 
 class WikipediaEventsSpider(BaseSpider):
@@ -60,8 +58,9 @@ class WikipediaEventsSpider(BaseSpider):
                         continue
 
                     raw_complete_date = "{0} {1}".format(raw_day, event_year)
-                    event['event_date'] = datetime.strptime(raw_complete_date, "%B %d %Y")
-
+                    complete_event_date = datetime.strptime(raw_complete_date, "%B %d %Y")
+                    event['complete_event_date'] = complete_event_date
+                    event['event_date'] = '{0}{1}'.format(complete_event_date.month, complete_event_date.day)
                     event['related_links'] = line.select('a/@href').extract()
                     event['random'] = random.random()
 
