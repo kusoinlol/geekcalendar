@@ -4,6 +4,10 @@ import datetime
 import pymongo
 import random
 
+YEAR_MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July',  
+               'August', 'September', 'October', 'November', 'December']
+
+
 def get_random_event_for(day):
     conn = pymongo.MongoClient()
     db = conn.geekcalendar
@@ -18,9 +22,13 @@ def get_random_event_for(day):
 @bottle.view('onthisday')
 def onthisday():
     day = datetime.datetime.today()
+
     event = get_random_event_for(day)
-    event = dict(event)
+
+    event_date = event['complete_event_date']
+    event['formatted_date'] = '{0} {1}, {2}'.format(YEAR_MONTHS[event_date.month], event_date.day, event_date.year)
+
     return {'event': event}
 
 
-bottle.run(host='localhost', port=8080)
+bottle.run(host='localhost', port=8080, debug=True, reloader=True)
