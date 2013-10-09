@@ -43,11 +43,11 @@ class WikipediaEventsSpider(BaseSpider):
                         continue
 
                     if headline_type == 'Births':
-                        short_description = short_description[9:]
+                        short_description = short_description[7:]
                         short_description = 'Birth of ' + short_description
 
                     if headline_type == 'Deaths':
-                        short_description = short_description[9:]
+                        short_description = short_description[7:]
                         short_description = 'Death of ' + short_description
                 
                     event['short_description'] = short_description
