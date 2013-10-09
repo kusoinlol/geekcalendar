@@ -31,4 +31,11 @@ def onthisday():
     return {'event': event}
 
 
+@bottle.route('/static/<filepath:path>')
+def serve_static(filepath):
+    import os
+    static_root = '/home/rennerocha/projects/geekcalendar/geekcalendar/geekcalendar/static'
+    return bottle.static_file(filepath, root=static_root)
+
+
 bottle.run(host='localhost', port=8080, debug=True, reloader=True)
