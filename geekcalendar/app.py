@@ -34,7 +34,7 @@ def onthisday():
 @bottle.route('/static/<filepath:path>')
 def serve_static(filepath):
     import os
-    static_root = '/home/rennerocha/projects/geekcalendar/geekcalendar/geekcalendar/static'
+    static_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
     return bottle.static_file(filepath, root=static_root)
 
 
