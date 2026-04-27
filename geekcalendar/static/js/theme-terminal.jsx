@@ -183,7 +183,7 @@
             <span className="blink"></span>
           </div>
 
-          <div className="tt-window" data-tear={props.tearKind} key={p.iso + (props.phase==='tearing'?'-old':'')}>
+          <div className="tt-window" data-tear={props.phase === 'tearing' ? props.tearKind : null} key={p.iso}>
             <div className="hd"><span>📅 daily.report</span><span className="id">[seed: {p.year*10000+p.month*100+p.day}]</span></div>
             <div className="body">
               {p.showEngChrome !== false && (

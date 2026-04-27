@@ -49,12 +49,15 @@
 /* The whole hardware unit */
 .tpos-machine{
   position:relative;display:flex;flex-direction:column;align-items:center;
-  width:min(100%,940px);
+  width:min(100%,1280px);
+  height:100%;
 }
 
 /* Bezel + screen frame */
 .tpos-bezel{
   width:100%;
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;
   background:linear-gradient(180deg,#191614 0%,#0a0807 100%);
   border-radius:16px 16px 6px 6px;
   padding:14px 14px 12px;
@@ -80,7 +83,7 @@
 /* The actual screen */
 .tpos-screen{
   width:100%;
-  aspect-ratio: 16/10;
+  flex:1;min-height:0;
   background:var(--tpos-bg);
   border-radius:3px;
   overflow:hidden;
@@ -244,9 +247,10 @@
 /* ---------------- Checkout modal (the calendar) ---------------- */
 .tpos-stage{position:absolute;inset:0;pointer-events:none;display:flex;
   align-items:center;justify-content:center;z-index:5}
+.tpos-modal-wrap{position:relative;pointer-events:auto;width:88%;max-width:1100px;height:90%;max-height:700px;display:flex;justify-content:center;align-items:center}
 .tpos-modal{
   pointer-events:auto;
-  width:78%;max-width:760px;height:88%;max-height:560px;background:#fff;border-radius:8px;
+  width:100%;height:100%;background:#fff;border-radius:8px;
   box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.05);
   display:flex;flex-direction:column;overflow:hidden;position:relative;
 }
@@ -629,10 +633,10 @@
               </div>
             </div>
 
-            {/* prev/next floating control - placed inside modal at bottom */}
+            {/* prev/next floating control - anchored to .tpos-modal-wrap (position:relative) */}
             <div style={{position:'absolute',bottom:8,right:14,
               display:'flex',gap:6,alignItems:'center',
-              fontSize:12,zIndex:10}}>
+              fontSize:12,zIndex:10,pointerEvents:'auto'}}>
               <button onClick={p.onPrev} style={{padding:'4px 10px',border:'1px solid var(--tpos-line)',borderRadius:3,background:'#fff',cursor:'pointer'}}>← 上一單</button>
               <input type="date" value={p.iso} onChange={e=>p.onPickDate(e.target.value)}
                 style={{padding:'4px 6px',border:'1px solid var(--tpos-line)',borderRadius:3,fontSize:11,background:'#fff'}}/>
