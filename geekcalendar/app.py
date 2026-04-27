@@ -1,41 +1,90 @@
-# -*- coding: utf-8 -*-
-import bottle
+"""宅民曆 — Nerdy Calendar.
+
+FastAPI app that renders a daily 農民曆-style page and exposes the same data
+as JSON for future browser extension / mobile app consumers.
+"""
+from __future__ import annotations
+
 import datetime
-import pymongo
-import random
+from pathlib import Path
 
-YEAR_MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July',  
-               'August', 'September', 'October', 'November', 'December']
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from geekcalendar.calendar_logic import (
+    load_quotes,
+    load_yi_ji_file,
+    pick_yi_ji,
+    quote_for_date,
+)
+
+PACKAGE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = PACKAGE_DIR.parent
+DATA_DIR = PACKAGE_DIR / "data"
+
+QUOTES = load_quotes(PROJECT_ROOT / "it.json")
+YI_POOL = load_yi_ji_file(DATA_DIR / "yi.json")
+JI_POOL = load_yi_ji_file(DATA_DIR / "ji.json")
+
+WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"]
+
+app = FastAPI(title="宅民曆 Nerdy Calendar", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
+
+app.mount("/static", StaticFiles(directory=PACKAGE_DIR / "static"), name="static")
+templates = Jinja2Templates(directory=PACKAGE_DIR / "templates")
 
 
-def get_random_event_for(day):
-    conn = pymongo.MongoClient()
-    db = conn.geekcalendar
-
-    event_date = '{0}{1}'.format(day.month, day.day)
-    event = db.events.find_one({'random': {'$gte': random.random()}, 'event_date': event_date })
-    
-    return event
-
-
-@bottle.route('/')
-@bottle.view('onthisday')
-def onthisday():
-    day = datetime.datetime.today()
-
-    event = get_random_event_for(day)
-
-    event_date = event['complete_event_date']
-    event['formatted_date'] = '{0} {1}, {2}'.format(YEAR_MONTHS[event_date.month], event_date.day, event_date.year)
-
-    return {'event': event}
+def _parse_date(date_str: str | None) -> datetime.date:
+    if not date_str:
+        return datetime.date.today()
+    try:
+        return datetime.date.fromisoformat(date_str)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="date must be YYYY-MM-DD") from exc
 
 
-@bottle.route('/static/<filepath:path>')
-def serve_static(filepath):
-    import os
-    static_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-    return bottle.static_file(filepath, root=static_root)
+def _build_payload(date: datetime.date) -> dict:
+    yi, ji = pick_yi_ji(date, YI_POOL, JI_POOL)
+    return {
+        "date": date.isoformat(),
+        "year": date.year,
+        "month": date.month,
+        "day": date.day,
+        "weekday": WEEKDAYS[date.weekday()],
+        "quote": quote_for_date(date, QUOTES),
+        "yi": yi,
+        "ji": ji,
+        "prev_date": (date - datetime.timedelta(days=1)).isoformat(),
+        "next_date": (date + datetime.timedelta(days=1)).isoformat(),
+        "is_today": date == datetime.date.today(),
+    }
 
 
-bottle.run(host='localhost', port=8080, debug=True, reloader=True)
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request, date: str | None = None) -> HTMLResponse:
+    target = _parse_date(date)
+    return templates.TemplateResponse(
+        "calendar.html",
+        {"request": request, **_build_payload(target)},
+    )
+
+
+@app.get("/api/v1/today")
+def api_today(date: str | None = None) -> dict:
+    """JSON payload for browser-extension / app consumers."""
+    return _build_payload(_parse_date(date))
+
+
+@app.get("/healthz")
+def healthz() -> dict:
+    return {"ok": True}

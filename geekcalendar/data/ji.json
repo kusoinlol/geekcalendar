@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "items": [
+    {"id": "deploy_prod_friday", "text": "週五下午部署 Production", "tags": ["deploy_prod"]},
+    {"id": "force_push_main", "text": "對 main / master 分支 force push", "tags": ["git_force_push"]},
+    {"id": "merge_no_review", "text": "未經 Review 直接合併 PR", "tags": ["review"]},
+    {"id": "deps_major_bump", "text": "在生產環境升級套件主版本", "tags": ["deps_major"]},
+    {"id": "alter_prod_schema", "text": "手動執行 Production DDL", "tags": ["db_schema"]},
+    {"id": "trust_pm_simple", "text": "輕信 PM 一句「這應該很簡單吧？」", "tags": ["pm_estimate"]},
+    {"id": "rm_rf_anything", "text": "在 Production 主機上 rm -rf", "tags": ["destructive"]},
+    {"id": "change_prod_env", "text": "手動改 Production 環境變數", "tags": ["prod_config"]},
+    {"id": "long_meeting", "text": "排超過 30 分鐘且無議程的全體大會", "tags": ["meeting_big"]},
+    {"id": "skip_tests", "text": "跳過測試直接合併", "tags": ["test"]},
+    {"id": "console_log_debug", "text": "用 console.log 除錯到天亮", "tags": ["bad_debug"]},
+    {"id": "refactor_friday", "text": "週五下班前發起大規模重構", "tags": ["refactor"]},
+    {"id": "deploy_before_holiday", "text": "連假前夕上線新功能", "tags": ["deploy_prod"]},
+    {"id": "ignore_warning", "text": "無視 Linter / Type Checker Warning", "tags": ["cleanup"]},
+    {"id": "hardcode_secret", "text": "Hardcode API Key 進原始碼", "tags": ["security"]},
+    {"id": "scope_creep", "text": "在 Sprint 中段加新需求", "tags": ["pm_estimate"]},
+    {"id": "blame_hunt", "text": "用 git blame 找戰犯", "tags": ["team_health"]},
+    {"id": "commit_typo_only", "text": "送出訊息為「Fixed stuff」的 commit", "tags": ["git_quality"]},
+    {"id": "accept_yes_install", "text": "在不熟的指令後直接按 y 安裝", "tags": ["caution"]}
+  ]
+}

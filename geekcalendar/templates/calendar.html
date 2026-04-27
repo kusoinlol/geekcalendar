@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>宅民曆 · {{ year }}/{{ "%02d"|format(month) }}/{{ "%02d"|format(day) }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="banner">
+    <span class="banner-title">宅民曆</span>
+    <span class="banner-sep">|</span>
+    <span class="banner-subtitle">Nerdy Calendar · 工程師專屬農民曆</span>
+  </header>
+
+  <nav class="toolbar" aria-label="日期切換">
+    <a class="nav-btn" href="/?date={{ prev_date }}" aria-label="前一天">← 前一天</a>
+    <form method="get" action="/" class="date-form">
+      <input type="date" name="date" value="{{ date }}" aria-label="選擇日期">
+      <button type="submit">前往</button>
+    </form>
+    <a class="nav-btn" href="/?date={{ next_date }}" aria-label="後一天">後一天 →</a>
+    {% if not is_today %}<a class="nav-btn nav-today" href="/">回到今日</a>{% endif %}
+  </nav>
+
+  <main class="page">
+    <section class="date-block">
+      <div class="ym">{{ year }} / {{ "%02d"|format(month) }}</div>
+      <div class="day-number">{{ day }}</div>
+      <div class="weekday">星 期 {{ weekday }}</div>
+    </section>
+
+    <section class="omens">
+      <div class="omen omen-yi">
+        <span class="omen-label">宜</span>
+        <ul>
+          {% for item in yi %}<li>{{ item.text }}</li>{% endfor %}
+        </ul>
+      </div>
+      <div class="omen omen-ji">
+        <span class="omen-label">忌</span>
+        <ul>
+          {% for item in ji %}<li>{{ item.text }}</li>{% endfor %}
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="quote-box">
+    <span class="quote-label">程式小格言</span>
+    <span class="quote-text">{{ quote }}</span>
+  </footer>
+</body>
+</html>

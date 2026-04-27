@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "items": [
+    {"id": "deploy_staging", "text": "部署到 Staging 環境", "tags": ["deploy_staging"]},
+    {"id": "refactor_small", "text": "重構小範圍函式", "tags": ["refactor"]},
+    {"id": "write_tests", "text": "撰寫單元測試", "tags": ["test"]},
+    {"id": "code_review", "text": "進行 Code Review", "tags": ["review"]},
+    {"id": "update_docs", "text": "更新技術文件", "tags": ["docs"]},
+    {"id": "clean_logs", "text": "清理多餘的 console.log", "tags": ["cleanup"]},
+    {"id": "deps_minor_bump", "text": "升級套件小版本", "tags": ["deps_minor"]},
+    {"id": "branch_cleanup", "text": "清理本地過期 git branch", "tags": ["git_cleanup"]},
+    {"id": "leave_on_time", "text": "準時下班", "tags": ["work_hours"]},
+    {"id": "drink_coffee", "text": "喝一杯好咖啡", "tags": ["coffee"]},
+    {"id": "fix_small_bug", "text": "修復標記為 good first issue 的 bug", "tags": ["bugfix_small"]},
+    {"id": "add_logging", "text": "為關鍵流程加上 structured log", "tags": ["observability"]},
+    {"id": "explore_lib", "text": "研究一個新套件", "tags": ["learning"]},
+    {"id": "rename_var", "text": "改善變數命名", "tags": ["refactor_naming"]},
+    {"id": "one_on_one", "text": "與主管或同事 1-on-1", "tags": ["meeting_1on1"]},
+    {"id": "rotate_secrets", "text": "輪換 API Token / Secret", "tags": ["security"]},
+    {"id": "backup_db", "text": "驗證資料庫備份可還原", "tags": ["db_backup"]},
+    {"id": "early_pr", "text": "早早開出 Draft PR 收 feedback", "tags": ["pr_workflow"]},
+    {"id": "rest_break", "text": "離開螢幕走一走", "tags": ["health"]}
+  ]
+}
