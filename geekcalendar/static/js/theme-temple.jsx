@@ -135,13 +135,38 @@
   padding:6px 14px;font-weight:900;letter-spacing:.2em;font-size:13px}
 .tm-quote .txt{font-size:14.5px;line-height:1.6;font-weight:600}
 
-.tm-page-old{position:absolute;inset:0;animation:tm-burn .55s ease-in forwards;transform-origin:top center;z-index:5}
-@keyframes tm-burn{
-  0%{opacity:1;transform:rotate(0) scale(1);filter:brightness(1)}
+.tm-page-old{position:absolute;inset:0;z-index:5;will-change:transform,opacity,filter}
+.tm-page-old[data-tear="down"]{transform-origin:top center;animation:tm-burn-down 1s ease-in forwards}
+.tm-page-old[data-tear="up"]{transform-origin:bottom center;animation:tm-burn-up 1s ease-in forwards}
+.tm-page-old[data-tear="left"]{transform-origin:right center;animation:tm-burn-left 1s ease-in forwards}
+.tm-page-old[data-tear="right"]{transform-origin:left center;animation:tm-burn-right 1s ease-in forwards}
+.tm-page-old[data-tear="fold"]{transform-origin:center;animation:tm-burn-fold 1s ease-in-out forwards}
+@keyframes tm-burn-down{
+  0%{opacity:1;transform:translateY(0);filter:brightness(1)}
   40%{filter:brightness(1.6) sepia(.4)}
-  100%{opacity:0;transform:rotate(-3deg) translateY(60px) scale(.95);filter:brightness(.4) sepia(1)}
+  100%{opacity:0;transform:rotate(-3deg) translateY(120px) scale(.92);filter:brightness(.4) sepia(1)}
 }
-.tm-page-new{animation:tm-rise .4s ease-out}
+@keyframes tm-burn-up{
+  0%{opacity:1;transform:translateY(0);filter:brightness(1)}
+  40%{filter:brightness(1.6) sepia(.4)}
+  100%{opacity:0;transform:rotate(2deg) translateY(-100px) scale(.92);filter:brightness(.4) sepia(1)}
+}
+@keyframes tm-burn-left{
+  0%{opacity:1;transform:translateX(0);filter:brightness(1)}
+  40%{filter:brightness(1.6) sepia(.4)}
+  100%{opacity:0;transform:rotate(-4deg) translateX(-110px) scale(.9);filter:brightness(.4) sepia(1)}
+}
+@keyframes tm-burn-right{
+  0%{opacity:1;transform:translateX(0);filter:brightness(1)}
+  40%{filter:brightness(1.6) sepia(.4)}
+  100%{opacity:0;transform:rotate(4deg) translateX(110px) scale(.9);filter:brightness(.4) sepia(1)}
+}
+@keyframes tm-burn-fold{
+  0%{opacity:1;transform:rotate(0) scale(1);filter:brightness(1)}
+  40%{filter:brightness(1.8) sepia(.5)}
+  100%{opacity:0;transform:rotate(-8deg) scale(.5);filter:brightness(.3) sepia(1) blur(1px)}
+}
+.tm-page-new{animation:tm-rise .55s ease-out}
 @keyframes tm-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
     `;
     const s = document.createElement('style');
@@ -171,7 +196,7 @@
             {showStack && <div className="tm-stack-back b2"></div>}
             {showStack && <div className="tm-stack-back"></div>}
             {props.phase === 'tearing' && (
-              <div className="tm-page-old"><Inner {...props} payload={props.prevPayload} /></div>
+              <div className="tm-page-old" data-tear={props.tearKind}><Inner {...props} payload={props.prevPayload} /></div>
             )}
             <div className="tm-page-new" key={p.iso}>
               <Inner {...props} payload={props} />

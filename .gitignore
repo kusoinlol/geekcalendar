@@ -39,6 +39,7 @@ nosetests.xml
 
 # Local design handoff bundles (not part of the deployable app)
 handoff/
+update2/
 
 # Local virtualenv
 .venv/

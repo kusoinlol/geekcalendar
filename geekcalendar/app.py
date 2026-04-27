@@ -45,7 +45,10 @@ YI_POOL = load_yi_ji_file(DATA_DIR / "yi.json")
 JI_POOL = load_yi_ji_file(DATA_DIR / "ji.json")
 
 WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"]
-THEMES = {"classic", "terminal", "newsprint", "temple"}
+THEMES = {
+    "classic", "terminal", "newsprint", "temple",
+    "cyberpunk", "ascii", "vscode", "receipt", "pos",
+}
 DEFAULT_THEME = "classic"
 
 app = FastAPI(title="宅民曆 Nerdy Calendar", version="0.2.0")

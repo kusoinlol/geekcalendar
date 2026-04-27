@@ -113,7 +113,7 @@
 .tt-controls button:hover{background:rgba(122,252,110,.1)}
 .tt-controls .today{background:var(--tt-green);color:var(--tt-bg);border-color:var(--tt-green);font-weight:700}
 
-.tt-page-old{position:absolute;inset:0;animation:tt-glitch .5s ease-out forwards}
+.tt-page-old{position:absolute;inset:0;animation:tt-glitch 1s ease-out forwards}
 @keyframes tt-glitch{
   0%{opacity:1;clip-path:inset(0 0 0 0);transform:translate(0,0)}
   20%{transform:translate(-2px,1px);clip-path:inset(20% 0 30% 0)}
@@ -121,8 +121,38 @@
   60%{transform:translate(-1px,2px);clip-path:inset(0 0 70% 0)}
   100%{opacity:0;transform:translate(0,-10px)}
 }
-.tt-page-new{animation:tt-typein .35s ease-out}
+.tt-window[data-tear="up"]{animation:tt-typein-up .8s ease-out}
+.tt-window[data-tear="down"]{animation:tt-typein-down .8s ease-out}
+.tt-window[data-tear="left"]{animation:tt-typein-left .8s ease-out}
+.tt-window[data-tear="right"]{animation:tt-typein-right .8s ease-out}
+.tt-window[data-tear="fold"]{animation:tt-typein-fold 1s ease-out}
+.tt-page-new{animation:tt-typein .8s ease-out}
 @keyframes tt-typein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes tt-typein-up{
+  0%{opacity:0;transform:translateY(20px);clip-path:inset(0 0 100% 0)}
+  40%{clip-path:inset(0 0 60% 0);filter:hue-rotate(120deg)}
+  100%{opacity:1;transform:translateY(0);clip-path:inset(0)}
+}
+@keyframes tt-typein-down{
+  0%{opacity:0;transform:translateY(-20px);clip-path:inset(100% 0 0 0)}
+  40%{clip-path:inset(60% 0 0 0);filter:hue-rotate(-90deg)}
+  100%{opacity:1;transform:translateY(0);clip-path:inset(0)}
+}
+@keyframes tt-typein-left{
+  0%{opacity:0;transform:translateX(40px) skewX(-8deg);clip-path:inset(0 0 0 100%)}
+  40%{clip-path:inset(0 0 0 40%);filter:hue-rotate(60deg)}
+  100%{opacity:1;transform:none;clip-path:inset(0)}
+}
+@keyframes tt-typein-right{
+  0%{opacity:0;transform:translateX(-40px) skewX(8deg);clip-path:inset(0 100% 0 0)}
+  40%{clip-path:inset(0 40% 0 0);filter:hue-rotate(-60deg)}
+  100%{opacity:1;transform:none;clip-path:inset(0)}
+}
+@keyframes tt-typein-fold{
+  0%{opacity:0;transform:scaleY(.04);filter:brightness(2) blur(2px)}
+  35%{transform:scaleY(.04);filter:brightness(2) blur(2px)}
+  100%{opacity:1;transform:scaleY(1);filter:none}
+}
 
 .tt-code-line{color:var(--tt-mute);font-size:11px;padding:6px 12px;
   border-top:1px solid var(--tt-line);background:#070a07;display:flex;gap:14px}
@@ -153,7 +183,7 @@
             <span className="blink"></span>
           </div>
 
-          <div className="tt-window" key={p.iso + (props.phase==='tearing'?'-old':'')}>
+          <div className="tt-window" data-tear={props.tearKind} key={p.iso + (props.phase==='tearing'?'-old':'')}>
             <div className="hd"><span>📅 daily.report</span><span className="id">[seed: {p.year*10000+p.month*100+p.day}]</span></div>
             <div className="body">
               {p.showEngChrome !== false && (

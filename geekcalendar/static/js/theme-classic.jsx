@@ -27,7 +27,7 @@
 .tcl-banner .sub{font-size:13px;color:#b8a06a;letter-spacing:.18em}
 .tcl-stage{flex:1;display:flex;flex-direction:column;align-items:center;
   padding:18px 24px;overflow:auto;gap:14px;position:relative}
-.tcl-toolbar{display:flex;gap:8px;align-items:center;font-size:13px}
+.tcl-toolbar{display:flex;gap:8px;align-items:center;justify-content:center;font-size:13px}
 .tcl-toolbar button,.tcl-toolbar input,.tcl-toolbar .seg{
   font-family:inherit;font-size:13px;color:#5a2418;background:#f0e1c1;
   border:1px solid #a07c46;border-radius:3px;padding:6px 12px;cursor:pointer;
@@ -118,14 +118,38 @@
 
 /* tear-off animation */
 .tcl-page-wrap{perspective:1600px;position:relative}
-.tcl-page-old{position:absolute;inset:0;z-index:5;transform-origin:top center;
-  animation:tcl-tear .52s cubic-bezier(.5,0,.75,.0) forwards}
-@keyframes tcl-tear{
+.tcl-page-old{position:absolute;inset:0;z-index:5;will-change:transform,opacity}
+.tcl-page-old[data-tear="down"]{transform-origin:top center;animation:tcl-tear-down 1s cubic-bezier(.5,0,.75,0) forwards}
+.tcl-page-old[data-tear="up"]{transform-origin:bottom center;animation:tcl-tear-up 1s cubic-bezier(.5,0,.75,0) forwards}
+.tcl-page-old[data-tear="left"]{transform-origin:right center;animation:tcl-tear-left 1s cubic-bezier(.55,.08,.68,.53) forwards}
+.tcl-page-old[data-tear="right"]{transform-origin:left center;animation:tcl-tear-right 1s cubic-bezier(.55,.08,.68,.53) forwards}
+.tcl-page-old[data-tear="fold"]{transform-origin:center center;animation:tcl-tear-fold 1s cubic-bezier(.5,0,.75,0) forwards}
+@keyframes tcl-tear-down{
   0%{transform:rotateX(0deg);opacity:1}
-  60%{transform:rotateX(-90deg);opacity:.9}
-  100%{transform:rotateX(-130deg) translateY(40px);opacity:0}
+  55%{transform:rotateX(-92deg);opacity:.9}
+  100%{transform:rotateX(-138deg) translateY(80px);opacity:0}
 }
-.tcl-page-new{animation:tcl-fadein .35s ease-out}
+@keyframes tcl-tear-up{
+  0%{transform:rotateX(0deg);opacity:1}
+  55%{transform:rotateX(92deg);opacity:.9}
+  100%{transform:rotateX(138deg) translateY(-80px);opacity:0}
+}
+@keyframes tcl-tear-left{
+  0%{transform:rotateY(0deg);opacity:1}
+  55%{transform:rotateY(82deg);opacity:.9}
+  100%{transform:rotateY(125deg) translateX(-60px);opacity:0}
+}
+@keyframes tcl-tear-right{
+  0%{transform:rotateY(0deg);opacity:1}
+  55%{transform:rotateY(-82deg);opacity:.9}
+  100%{transform:rotateY(-125deg) translateX(60px);opacity:0}
+}
+@keyframes tcl-tear-fold{
+  0%{transform:scaleY(1);opacity:1;filter:brightness(1)}
+  50%{transform:scaleY(.04);opacity:.9;filter:brightness(.6)}
+  100%{transform:scaleY(0) translateY(40px);opacity:0;filter:brightness(.4)}
+}
+.tcl-page-new{animation:tcl-fadein .55s ease-out}
 @keyframes tcl-fadein{from{opacity:0}to{opacity:1}}
 .tcl-page-perforate{position:absolute;top:6px;left:0;right:0;height:1px;
   background:repeating-linear-gradient(90deg,var(--tcl-edge) 0 4px,transparent 4px 8px);
@@ -177,7 +201,7 @@
         {showStack && <div className="tcl-stack-back"></div>}
         <div className="tcl-page-wrap">
           {props.phase === 'tearing' && (
-            <div className="tcl-page-old"><PageInner {...props} payload={props.prevPayload} /></div>
+            <div className="tcl-page-old" data-tear={props.tearKind}><PageInner {...props} payload={props.prevPayload} /></div>
           )}
           <div className="tcl-page-new" key={props.iso}>
             <PageInner {...props} payload={props} />

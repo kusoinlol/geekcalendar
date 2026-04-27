@@ -39,12 +39,22 @@
   background:var(--tn-paper);border:2px solid var(--tn-ink);max-width:880px;margin:0 auto;
   position:relative;box-shadow:6px 6px 0 var(--tn-ink);
 }
-.tn-page-old{position:absolute;inset:0;animation:tn-flip .5s ease-in forwards;transform-origin:left center;z-index:5}
-@keyframes tn-flip{
-  0%{transform:rotateY(0)}
-  100%{transform:rotateY(-180deg);opacity:0}
+.tn-page-old{position:absolute;inset:0;z-index:5;will-change:transform,opacity}
+.tn-page-old[data-tear="left"]{transform-origin:left center;animation:tn-flip-left 1s ease-in forwards}
+.tn-page-old[data-tear="right"]{transform-origin:right center;animation:tn-flip-right 1s ease-in forwards}
+.tn-page-old[data-tear="up"]{transform-origin:bottom center;animation:tn-flip-up 1s ease-in forwards}
+.tn-page-old[data-tear="down"]{transform-origin:top center;animation:tn-flip-down 1s ease-in forwards}
+.tn-page-old[data-tear="fold"]{transform-origin:center center;animation:tn-fold 1s ease-in-out forwards}
+@keyframes tn-flip-left{0%{transform:rotateY(0)}100%{transform:rotateY(-180deg);opacity:0}}
+@keyframes tn-flip-right{0%{transform:rotateY(0)}100%{transform:rotateY(180deg);opacity:0}}
+@keyframes tn-flip-up{0%{transform:rotateX(0)}100%{transform:rotateX(180deg);opacity:0}}
+@keyframes tn-flip-down{0%{transform:rotateX(0)}100%{transform:rotateX(-180deg);opacity:0}}
+@keyframes tn-fold{
+  0%{transform:scaleX(1) scaleY(1);opacity:1}
+  50%{transform:scaleX(.04) scaleY(1.02);opacity:.8}
+  100%{transform:scaleX(0) scaleY(.4);opacity:0}
 }
-.tn-page-new{animation:tn-fadein .35s ease-out}
+.tn-page-new{animation:tn-fadein .55s ease-out}
 @keyframes tn-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .tn-page-wrap{perspective:1800px;position:relative}
 .tn-stack-back{position:absolute;left:8px;top:8px;right:-2px;bottom:-6px;
@@ -132,7 +142,7 @@
             {showStack && <div className="tn-stack-back b2"></div>}
             {showStack && <div className="tn-stack-back"></div>}
             {props.phase === 'tearing' && (
-              <div className="tn-page-old"><Inner {...props} payload={props.prevPayload} /></div>
+              <div className="tn-page-old" data-tear={props.tearKind}><Inner {...props} payload={props.prevPayload} /></div>
             )}
             <div className="tn-page-new" key={p.iso}>
               <Inner {...props} payload={props} />

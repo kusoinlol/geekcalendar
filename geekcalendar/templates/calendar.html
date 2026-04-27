@@ -29,8 +29,12 @@
   <div id="root"></div>
 
   <nav class="theme-switch" aria-label="主題切換">
+    {% set theme_labels = {
+      'classic':'牛皮', 'terminal':'終端', 'newsprint':'報紙', 'temple':'廟宇',
+      'cyberpunk':'霓虹', 'ascii':'ASCII', 'vscode':'VSCode', 'receipt':'收據', 'pos':'POS'
+    } %}
     {% for t in themes %}
-      <a href="?date={{ payload.iso }}&theme={{ t }}" class="{% if t == theme %}active{% endif %}">{{ {'classic':'牛皮','terminal':'終端','newsprint':'報紙','temple':'廟宇'}[t] }}</a>
+      <a href="?date={{ payload.iso }}&theme={{ t }}" class="{% if t == theme %}active{% endif %}">{{ theme_labels[t] }}</a>
     {% endfor %}
   </nav>
 
@@ -45,10 +49,16 @@
 
   <!-- shared text-renderer + theme registry -->
   <script type="text/babel" src="/static/js/almanac-render.jsx"></script>
+  <!-- theme-classic must load first: it defines window.AlmanacRender.renderText used by all others -->
   <script type="text/babel" src="/static/js/theme-classic.jsx"></script>
   <script type="text/babel" src="/static/js/theme-terminal.jsx"></script>
   <script type="text/babel" src="/static/js/theme-newsprint.jsx"></script>
   <script type="text/babel" src="/static/js/theme-temple.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-cyberpunk.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-ascii.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-vscode.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-receipt.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-pos.jsx"></script>
 
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
@@ -62,16 +72,23 @@
       return r.json();
     }
 
+    const TEAR_DUR_MS = 1000;
+    const FORWARD_KINDS  = ['down', 'down', 'left',  'left',  'fold'];
+    const BACKWARD_KINDS = ['up',   'up',   'right', 'right', 'fold'];
+
     function App() {
       const [payload, setPayload] = useState(window.__PAYLOAD__);
       const [phase, setPhase] = useState('idle');
       const [direction, setDirection] = useState(1);
+      const [tearKind, setTearKind] = useState('down');
       const [prevPayload, setPrevPayload] = useState(window.__PAYLOAD__);
       const themeDef = window.AlmanacThemes.get(window.__THEME__) || window.AlmanacThemes.all()[0];
       const ThemeComponent = themeDef.render;
 
       function go(iso, dir) {
+        const pool = dir === 1 ? FORWARD_KINDS : BACKWARD_KINDS;
         setDirection(dir);
+        setTearKind(pool[Math.floor(Math.random() * pool.length)]);
         setPhase('tearing');
         fetchPayload(iso).then(p => {
           // update URL without reload
@@ -80,7 +97,7 @@
           history.replaceState(null, '', u);
           setPrevPayload(payload);
           setPayload(p);
-          setTimeout(() => setPhase('idle'), 520);
+          setTimeout(() => setPhase('idle'), TEAR_DUR_MS);
         });
       }
 
@@ -103,6 +120,7 @@
         showStack: true,
         phase,
         direction,
+        tearKind,
         prevPayload,
       };
 
