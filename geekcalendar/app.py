@@ -1,11 +1,13 @@
 """宅民曆 — Nerdy Calendar.
 
-FastAPI app that renders a daily 農民曆-style page and exposes the same data
-as JSON for future browser extension / mobile app consumers.
+FastAPI app that renders a daily 農民曆-style page (theme-pluggable on
+the frontend) and exposes the same data as JSON for browser extension /
+mobile app consumers.
 """
 from __future__ import annotations
 
 import datetime
+import time
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -20,6 +22,19 @@ from geekcalendar.calendar_logic import (
     pick_yi_ji,
     quote_for_date,
 )
+from geekcalendar.lunar import (
+    auspicious_hours,
+    chong_zodiac,
+    day_of_year,
+    engineer_chong,
+    engineer_sha,
+    ganzhi_year,
+    iso_week,
+    lunar_day_cn,
+    lunar_month_cn,
+    solar_to_lunar,
+    zodiac_year,
+)
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = PACKAGE_DIR.parent
@@ -30,8 +45,10 @@ YI_POOL = load_yi_ji_file(DATA_DIR / "yi.json")
 JI_POOL = load_yi_ji_file(DATA_DIR / "ji.json")
 
 WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"]
+THEMES = {"classic", "terminal", "newsprint", "temple"}
+DEFAULT_THEME = "classic"
 
-app = FastAPI(title="宅民曆 Nerdy Calendar", version="0.1.0")
+app = FastAPI(title="宅民曆 Nerdy Calendar", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,15 +72,34 @@ def _parse_date(date_str: str | None) -> datetime.date:
 
 def _build_payload(date: datetime.date) -> dict:
     yi, ji = pick_yi_ji(date, YI_POOL, JI_POOL)
+    lunar = solar_to_lunar(date)
     return {
         "date": date.isoformat(),
+        "iso": date.isoformat(),
         "year": date.year,
         "month": date.month,
         "day": date.day,
         "weekday": WEEKDAYS[date.weekday()],
+        "weekdayIdx": date.weekday(),
         "quote": quote_for_date(date, QUOTES),
         "yi": yi,
         "ji": ji,
+        # lunar / 干支 / 生肖
+        "lunar": {"y": lunar.y, "m": lunar.m, "dM": lunar.dM, "leap": lunar.leap},
+        "lunarMonthCN": lunar_month_cn(lunar.m, lunar.leap),
+        "lunarDayCN": lunar_day_cn(lunar.dM),
+        "ganzhi": ganzhi_year(lunar.y),
+        "zodiac": zodiac_year(lunar.y),
+        "chong": chong_zodiac(lunar.y),
+        # engineer chrome
+        "engChong": engineer_chong(date),
+        "engSha": engineer_sha(date),
+        "hours": auspicious_hours(date),
+        # nerd extras
+        "unix": int(time.mktime(date.timetuple())),
+        "iso_week": iso_week(date),
+        "doy": day_of_year(date),
+        # nav
         "prev_date": (date - datetime.timedelta(days=1)).isoformat(),
         "next_date": (date + datetime.timedelta(days=1)).isoformat(),
         "is_today": date == datetime.date.today(),
@@ -71,11 +107,19 @@ def _build_payload(date: datetime.date) -> dict:
 
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, date: str | None = None) -> HTMLResponse:
+def index(request: Request, date: str | None = None, theme: str = DEFAULT_THEME) -> HTMLResponse:
+    if theme not in THEMES:
+        theme = DEFAULT_THEME
     target = _parse_date(date)
+    payload = _build_payload(target)
     return templates.TemplateResponse(
         "calendar.html",
-        {"request": request, **_build_payload(target)},
+        {
+            "request": request,
+            "payload": payload,
+            "theme": theme,
+            "themes": sorted(THEMES),
+        },
     )
 
 

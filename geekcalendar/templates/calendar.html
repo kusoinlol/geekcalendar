@@ -2,56 +2,114 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>宅民曆 · {{ year }}/{{ "%02d"|format(month) }}/{{ "%02d"|format(day) }}</title>
+  <title>宅民曆 · {{ payload.year }}/{{ "%02d"|format(payload.month) }}/{{ "%02d"|format(payload.day) }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #1a1612; font-family: 'Noto Serif TC', serif; }
+    #root { width: 100vw; height: 100vh; overflow: hidden; }
+    code { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+    /* tiny theme switcher in top-left, style-agnostic */
+    .theme-switch {
+      position: fixed; top: 12px; left: 12px; z-index: 9999;
+      display: flex; gap: 6px; font: 12px/1.4 -apple-system, system-ui, sans-serif;
+      background: rgba(0,0,0,0.55); padding: 6px 8px; border-radius: 8px;
+      backdrop-filter: blur(12px);
+    }
+    .theme-switch a {
+      color: rgba(255,255,255,0.7); text-decoration: none; padding: 3px 8px; border-radius: 4px;
+    }
+    .theme-switch a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .theme-switch a.active { background: rgba(255,255,255,0.2); color: #fff; font-weight: 600; }
+  </style>
 </head>
 <body>
-  <header class="banner">
-    <span class="banner-title">宅民曆</span>
-    <span class="banner-sep">|</span>
-    <span class="banner-subtitle">Nerdy Calendar · 工程師專屬農民曆</span>
-  </header>
+  <div id="root"></div>
 
-  <nav class="toolbar" aria-label="日期切換">
-    <a class="nav-btn" href="/?date={{ prev_date }}" aria-label="前一天">← 前一天</a>
-    <form method="get" action="/" class="date-form">
-      <input type="date" name="date" value="{{ date }}" aria-label="選擇日期">
-      <button type="submit">前往</button>
-    </form>
-    <a class="nav-btn" href="/?date={{ next_date }}" aria-label="後一天">後一天 →</a>
-    {% if not is_today %}<a class="nav-btn nav-today" href="/">回到今日</a>{% endif %}
+  <nav class="theme-switch" aria-label="主題切換">
+    {% for t in themes %}
+      <a href="?date={{ payload.iso }}&theme={{ t }}" class="{% if t == theme %}active{% endif %}">{{ {'classic':'牛皮','terminal':'終端','newsprint':'報紙','temple':'廟宇'}[t] }}</a>
+    {% endfor %}
   </nav>
 
-  <main class="page">
-    <section class="date-block">
-      <div class="ym">{{ year }} / {{ "%02d"|format(month) }}</div>
-      <div class="day-number">{{ day }}</div>
-      <div class="weekday">星 期 {{ weekday }}</div>
-    </section>
+  <script>
+    window.__PAYLOAD__ = {{ payload | tojson }};
+    window.__THEME__ = {{ theme | tojson }};
+  </script>
 
-    <section class="omens">
-      <div class="omen omen-yi">
-        <span class="omen-label">宜</span>
-        <ul>
-          {% for item in yi %}<li>{{ item.text }}</li>{% endfor %}
-        </ul>
-      </div>
-      <div class="omen omen-ji">
-        <span class="omen-label">忌</span>
-        <ul>
-          {% for item in ji %}<li>{{ item.text }}</li>{% endfor %}
-        </ul>
-      </div>
-    </section>
-  </main>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
 
-  <footer class="quote-box">
-    <span class="quote-label">程式小格言</span>
-    <span class="quote-text">{{ quote }}</span>
-  </footer>
+  <!-- shared text-renderer + theme registry -->
+  <script type="text/babel" src="/static/js/almanac-render.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-classic.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-terminal.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-newsprint.jsx"></script>
+  <script type="text/babel" src="/static/js/theme-temple.jsx"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    function fmtISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+    function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+
+    async function fetchPayload(iso) {
+      const r = await fetch('/api/v1/today?date=' + iso);
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+
+    function App() {
+      const [payload, setPayload] = useState(window.__PAYLOAD__);
+      const [phase, setPhase] = useState('idle');
+      const [direction, setDirection] = useState(1);
+      const [prevPayload, setPrevPayload] = useState(window.__PAYLOAD__);
+      const themeDef = window.AlmanacThemes.get(window.__THEME__) || window.AlmanacThemes.all()[0];
+      const ThemeComponent = themeDef.render;
+
+      function go(iso, dir) {
+        setDirection(dir);
+        setPhase('tearing');
+        fetchPayload(iso).then(p => {
+          // update URL without reload
+          const u = new URL(location.href);
+          u.searchParams.set('date', iso);
+          history.replaceState(null, '', u);
+          setPrevPayload(payload);
+          setPayload(p);
+          setTimeout(() => setPhase('idle'), 520);
+        });
+      }
+
+      const handlers = {
+        onPrev: () => go(payload.prev_date, -1),
+        onNext: () => go(payload.next_date, 1),
+        onToday: () => go(fmtISO(new Date()), 1),
+        onPickDate: (iso) => {
+          const cur = parseISO(payload.iso).getTime();
+          const next = parseISO(iso).getTime();
+          go(iso, next > cur ? 1 : -1);
+        },
+      };
+
+      const ctx = {
+        ...payload,
+        ...handlers,
+        showLunar: true,
+        showEngChrome: true,
+        showStack: true,
+        phase,
+        direction,
+        prevPayload,
+      };
+
+      return <ThemeComponent {...ctx} />;
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>

@@ -37,3 +37,9 @@ nosetests.xml
 # Vim
 .*.swp
 
+# Local design handoff bundles (not part of the deployable app)
+handoff/
+
+# Local virtualenv
+.venv/
+
