@@ -60,6 +60,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_cache_headers(request: Request, call_next):
+    """Cache hints for Cloudflare / browsers.
+
+    The calendar payload is deterministic per date, and JSX assets only change
+    on deploy. `s-maxage` controls the CDN's TTL (Cloudflare obeys it);
+    `max-age` controls the browser's. Cloudflare Cache Rules can override these
+    if needed but defaults work.
+    """
+    response = await call_next(request)
+    if response.status_code >= 400:
+        return response
+    path = request.url.path
+    if path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=86400, s-maxage=86400"
+    elif path == "/healthz":
+        response.headers["Cache-Control"] = "no-store"
+    elif path == "/" or path.startswith("/api/"):
+        # Browser caches 10 min, CDN caches 1 hour. Purge Cloudflare cache
+        # after each deploy or after editing yi.json / ji.json / it.json.
+        response.headers["Cache-Control"] = "public, max-age=600, s-maxage=3600"
+    return response
+
+
 app.mount("/static", StaticFiles(directory=PACKAGE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=PACKAGE_DIR / "templates")
 
