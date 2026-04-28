@@ -114,6 +114,36 @@
 .tn-quote .lbl{flex-shrink:0;background:var(--tn-ink);color:var(--tn-paper);
   padding:4px 12px;font-weight:900;letter-spacing:.2em;font-size:12px}
 .tn-quote .txt{font-size:14px;line-height:1.6;font-style:italic}
+
+@media (max-width:820px){
+  .tn-page{max-width:760px}
+  .tn-grid{grid-template-columns:1.4fr 2fr;gap:14px}
+  .tn-date-cell .day{font-size:160px}
+  .tn-headline h1{font-size:26px}
+  .tn-headline{gap:12px}
+  .tn-stage{padding:14px 16px 60px}
+}
+@media (max-width:480px){
+  .tn-bar{padding:10px 14px}
+  .tn-bar .title{font-size:20px}
+  .tn-bar .sub,.tn-bar .issue{font-size:10px}
+  .tn-page{max-width:100%;padding:14px 16px}
+  .tn-grid{grid-template-columns:1fr;gap:14px}
+  .tn-date-cell{border-right:none;border-bottom:2px solid var(--tn-ink);padding-bottom:14px}
+  .tn-date-cell .day{font-size:100px}
+  .tn-date-cell .day::after{font-size:100px}
+  .tn-headline{flex-direction:column;align-items:flex-start;gap:8px}
+  .tn-headline h1{font-size:22px}
+  .tn-headline .meta{text-align:left;font-size:10.5px}
+  .tn-stack-back,.tn-stack-back.b2{display:none}
+  .tn-root::before{opacity:.3}
+  .tn-meta-strip{flex-wrap:wrap;font-size:10.5px;padding:4px 10px;gap:8px}
+  .tn-omen ul{font-size:13px}
+  .tn-quote{padding:10px 14px;font-size:13px}
+  .tn-quote .txt{font-size:13px}
+  .tn-toolbar{flex-wrap:wrap;gap:6px;font-size:12px}
+  .tn-stage{padding:10px 14px 60px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);

@@ -176,6 +176,24 @@
   35%{transform:scaleY(.04)}
   100%{opacity:1;transform:scaleY(1)}
 }
+
+@media (max-width:820px){
+  .trc-paper-wrap{width:95vw;max-width:460px}
+  .trc-date .day{font-size:56px}
+  .trc-head .shop{font-size:18px}
+}
+@media (max-width:480px){
+  .trc-paper-wrap{width:92vw;max-width:380px}
+  .trc-paper{padding:10px 16px 8px}
+  .trc-date .day{font-size:48px}
+  .trc-date .ym{font-size:11px}
+  .trc-head .shop{font-size:16px}
+  .trc-section li{font-size:11px}
+  .trc-stamp{width:60px;height:60px;font-size:14px;top:36px;right:-4px}
+  .trc-foot .barcode{height:32px}
+  .trc-meta-row{font-size:11px}
+  .trc-hours .h{font-size:11px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);

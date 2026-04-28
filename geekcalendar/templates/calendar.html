@@ -4,43 +4,360 @@
   <meta charset="UTF-8">
   <title>宅民曆 · {{ payload.year }}/{{ "%02d"|format(payload.month) }}/{{ "%02d"|format(payload.day) }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {# Open Graph for Facebook / LINE link previews #}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="宅民曆 · {{ payload.iso }} 星期{{ payload.weekday }}">
+  <meta property="og:description" content="宜：{% for it in payload.yi[:2] %}{{ it.text }}{% if not loop.last %}、{% endif %}{% endfor %} · 忌：{% for it in payload.ji[:2] %}{{ it.text }}{% if not loop.last %}、{% endif %}{% endfor %}">
+  <meta name="description" content="工程師專屬農民曆。今日宜忌、農曆、干支、沖煞，每天一句程式小格言。">
+  <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
   <style>
     html, body { margin: 0; padding: 0; height: 100%; background: #1a1612; font-family: 'Noto Serif TC', serif; }
-    #root { width: 100vw; height: 100vh; overflow: hidden; }
+    #root { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
     code { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
-    /* tiny theme switcher in top-left, style-agnostic */
-    .theme-switch {
-      position: fixed; top: 12px; left: 12px; z-index: 9999;
-      display: flex; gap: 6px; font: 12px/1.4 -apple-system, system-ui, sans-serif;
-      background: rgba(0,0,0,0.55); padding: 6px 8px; border-radius: 8px;
+
+    /* Unified chrome bar — theme switcher + share/download buttons in one
+     * draggable/collapsible panel. Defaults to a small ⚙ icon at bottom-right;
+     * click to expand. Whole panel is the drag handle (mouse or touch);
+     * click-vs-drag is decided by movement threshold so inner buttons still
+     * work normally and the collapsed icon is itself draggable. State
+     * (position + collapsed/expanded) persisted in localStorage. */
+    .chrome-bar {
+      position: fixed; z-index: 9999;
+      bottom: 16px; right: 16px;  /* default anchor when no saved position */
+      cursor: grab; touch-action: none;
+      font: 12px/1.4 -apple-system, system-ui, sans-serif;
+    }
+    .chrome-bar.dragging {
+      cursor: grabbing; user-select: none; -webkit-user-select: none;
+      opacity: 0.9;
+    }
+
+    /* Collapsed: just a round ⚙ icon */
+    .chrome-bar[data-state="collapsed"] .chrome-content { display: none; }
+    .chrome-bar[data-state="expanded"] .chrome-icon { display: none; }
+    .chrome-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px;
+      background: rgba(0,0,0,0.6);
+      border: none; border-radius: 50%;
+      color: rgba(255,255,255,0.85); font-size: 20px; line-height: 1;
+      cursor: inherit;
       backdrop-filter: blur(12px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.45);
     }
-    .theme-switch a {
-      color: rgba(255,255,255,0.7); text-decoration: none; padding: 3px 8px; border-radius: 4px;
+    .chrome-icon:hover { background: rgba(0,0,0,0.78); color: #fff; }
+
+    /* Expanded: stacked panel with theme + share sections */
+    .chrome-content {
+      display: flex; flex-direction: column; gap: 4px;
+      background: rgba(0,0,0,0.55);
+      padding: 8px; border-radius: 12px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      min-width: 240px;
+      max-width: calc(100vw - 32px);
     }
-    .theme-switch a:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .theme-switch a.active { background: rgba(255,255,255,0.2); color: #fff; font-weight: 600; }
+    .chrome-section {
+      display: flex; flex-wrap: wrap; gap: 4px;
+    }
+    .chrome-section a, .chrome-section button {
+      font: inherit; color: rgba(255,255,255,0.7);
+      background: transparent; border: none;
+      padding: 4px 10px; border-radius: 4px;
+      text-decoration: none; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .chrome-section a:hover, .chrome-section button:hover {
+      background: rgba(255,255,255,0.12); color: #fff;
+    }
+    .chrome-section a.active {
+      background: rgba(255,255,255,0.2); color: #fff; font-weight: 600;
+    }
+    .chrome-section button.copied { color: #7afc6e; }
+    .chrome-section button:disabled { opacity: 0.5; cursor: wait; }
+    .chrome-divider {
+      height: 1px; background: rgba(255,255,255,0.15);
+      margin: 4px 2px;
+    }
+    .chrome-collapse {
+      align-self: flex-end;
+      font: inherit; font-size: 13px; line-height: 1;
+      background: transparent; border: none;
+      color: rgba(255,255,255,0.55); cursor: pointer;
+      padding: 3px 10px; border-radius: 4px;
+      margin-top: -2px;
+    }
+    .chrome-collapse:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* tiny copyright at bottom-left */
+    .copyright {
+      position: fixed; bottom: 8px; left: 12px; z-index: 8000;
+      font: 10px/1.4 -apple-system, system-ui, sans-serif;
+      color: rgba(255,255,255,0.65);
+      background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
-  <nav class="theme-switch" aria-label="主題切換">
-    {% set theme_labels = {
-      'classic':'牛皮', 'terminal':'終端', 'newsprint':'報紙', 'temple':'廟宇',
-      'cyberpunk':'霓虹', 'ascii':'ASCII', 'vscode':'VSCode', 'receipt':'收據', 'pos':'POS'
-    } %}
-    {% for t in themes %}
-      <a href="?date={{ payload.iso }}&theme={{ t }}" class="{% if t == theme %}active{% endif %}">{{ theme_labels[t] }}</a>
-    {% endfor %}
+  {% set theme_labels = {
+    'classic':'牛皮', 'terminal':'終端', 'newsprint':'報紙', 'temple':'廟宇',
+    'cyberpunk':'霓虹', 'ascii':'ASCII', 'vscode':'VSCode', 'receipt':'收據', 'pos':'POS'
+  } %}
+  <nav class="chrome-bar" aria-label="主題與分享" data-state="collapsed">
+    <button class="chrome-icon" type="button" aria-label="開啟主題與分享面板" title="主題與分享">⚙</button>
+    <div class="chrome-content">
+      <div class="chrome-section" aria-label="主題切換">
+        {% for t in themes %}
+          <a href="?date={{ payload.iso }}&theme={{ t }}" class="{% if t == theme %}active{% endif %}">{{ theme_labels[t] }}</a>
+        {% endfor %}
+      </div>
+      <div class="chrome-divider"></div>
+      <div class="chrome-section" aria-label="分享">
+        <button type="button" onclick="shareTo('facebook')" title="分享到 Facebook">Facebook</button>
+        <button type="button" onclick="shareTo('line')" title="分享到 LINE">LINE</button>
+        <button type="button" onclick="copyShareLink(this)" title="複製連結">複製連結</button>
+        <button type="button" onclick="downloadAsJPG(this)" title="下載成 JPG 圖片">下載圖片</button>
+      </div>
+      <button class="chrome-collapse" type="button" aria-label="收合面板">−</button>
+    </div>
   </nav>
+
+  <footer class="copyright">© 2026 宅民曆 · Nerdy Calendar · all your build are belong to us</footer>
 
   <script>
     window.__PAYLOAD__ = {{ payload | tojson }};
     window.__THEME__ = {{ theme | tojson }};
+
+    // ── Unified chrome bar: drag + collapse/expand ───────────────────────
+    (function setupChromeBar() {
+      const STORAGE_KEY = 'nerdy-cal:chrome';
+      const DRAG_THRESHOLD = 4;  // px — > this counts as a drag, otherwise click
+      const bar = document.querySelector('.chrome-bar');
+      if (!bar) return;
+
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      const load = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } };
+      const save = s => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (e) {} };
+
+      function clampInView() {
+        if (!bar.style.left) return;
+        const w = bar.offsetWidth, h = bar.offsetHeight;
+        const l = parseFloat(bar.style.left) || 0, t = parseFloat(bar.style.top) || 0;
+        bar.style.left = clamp(l, 4, window.innerWidth - w - 4) + 'px';
+        bar.style.top = clamp(t, 4, window.innerHeight - h - 4) + 'px';
+      }
+      function setState(state) {
+        bar.dataset.state = state;
+        const cur = load();
+        cur.expanded = (state === 'expanded');
+        save(cur);
+        // After size change re-clamp into viewport
+        requestAnimationFrame(clampInView);
+      }
+
+      // ── Restore saved state (default: collapsed at bottom-right) ──────
+      const saved = load();
+      bar.dataset.state = saved.expanded === true ? 'expanded' : 'collapsed';
+      if (saved.left != null && saved.top != null) {
+        bar.style.left = saved.left + 'px';
+        bar.style.top = saved.top + 'px';
+        bar.style.right = 'auto';
+        bar.style.bottom = 'auto';
+        requestAnimationFrame(clampInView);
+      }
+
+      // ── Drag tracking ── click vs. drag decided by movement threshold ─
+      let pressing = false, sx = 0, sy = 0, sl = 0, st = 0;
+      let moved = false;       // true once we exceeded threshold this gesture
+      let suppressClick = false; // suppress the upcoming click after a drag
+
+      function down(e) {
+        const p = e.touches ? e.touches[0] : e;
+        pressing = true; moved = false;
+        const r = bar.getBoundingClientRect();
+        sx = p.clientX; sy = p.clientY;
+        sl = r.left; st = r.top;
+        // Don't preventDefault on down — we want native click flow if it ends
+        // up being a click (no movement). preventDefault happens in move().
+      }
+      function move(e) {
+        if (!pressing) return;
+        const p = e.touches ? e.touches[0] : e;
+        const dx = p.clientX - sx, dy = p.clientY - sy;
+        if (!moved && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
+          moved = true;
+          bar.classList.add('dragging');
+          // Switch to absolute left/top anchoring
+          bar.style.left = sl + 'px';
+          bar.style.top = st + 'px';
+          bar.style.right = 'auto';
+          bar.style.bottom = 'auto';
+        }
+        if (moved) {
+          const w = bar.offsetWidth, h = bar.offsetHeight;
+          bar.style.left = clamp(sl + dx, 4, window.innerWidth - w - 4) + 'px';
+          bar.style.top = clamp(st + dy, 4, window.innerHeight - h - 4) + 'px';
+          if (e.cancelable) e.preventDefault();
+        }
+      }
+      function up() {
+        if (!pressing) return;
+        pressing = false;
+        if (moved) {
+          bar.classList.remove('dragging');
+          suppressClick = true;
+          const cur = load();
+          cur.left = parseFloat(bar.style.left) || null;
+          cur.top = parseFloat(bar.style.top) || null;
+          save(cur);
+        }
+      }
+
+      bar.addEventListener('mousedown', down);
+      bar.addEventListener('touchstart', down, { passive: true });
+      document.addEventListener('mousemove', move);
+      document.addEventListener('touchmove', move, { passive: false });
+      document.addEventListener('mouseup', up);
+      document.addEventListener('touchend', up);
+      document.addEventListener('touchcancel', up);
+
+      // Capture-phase click guard: kill the click that follows a drag
+      bar.addEventListener('click', e => {
+        if (suppressClick) {
+          suppressClick = false;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      }, true);
+
+      // ── Expand/collapse triggers (work as normal clicks; drag-guard above
+      //    prevents accidental triggering after a drag). ──────────────────
+      bar.querySelector('.chrome-icon')?.addEventListener('click', () => setState('expanded'));
+      bar.querySelector('.chrome-collapse')?.addEventListener('click', () => setState('collapsed'));
+
+      // Re-clamp on viewport resize so the bar can't get stranded off-screen
+      window.addEventListener('resize', () => requestAnimationFrame(clampInView));
+    })();
+
+    function shareTo(platform) {
+      const url = encodeURIComponent(window.location.href);
+      const targets = {
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
+        line:     'https://social-plugins.line.me/lineit/share?url=' + url,
+      };
+      window.open(targets[platform], '_blank', 'noopener,width=620,height=520');
+    }
+
+    async function copyShareLink(btn) {
+      const fallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = window.location.href;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
+      };
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(window.location.href);
+        } else {
+          fallback();
+        }
+        const old = btn.textContent;
+        btn.textContent = '✓ 已複製';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+      } catch (e) {
+        btn.textContent = '✗ 失敗';
+        setTimeout(() => { btn.textContent = '複製連結'; }, 1500);
+      }
+    }
+
+    // Lazy-load html-to-image. Required (not html2canvas) because cyberpunk
+    // uses background-clip:text, classic uses mix-blend-mode, temple has
+    // layered gradients — all of which html2canvas can't render correctly.
+    // SVG <foreignObject> lets the actual browser paint, so it captures
+    // exactly what users see.
+    let htmlToImageLoader = null;
+    function ensureHtmlToImage() {
+      if (htmlToImageLoader) return htmlToImageLoader;
+      htmlToImageLoader = new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js';
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error('html-to-image failed to load'));
+        document.head.appendChild(s);
+      });
+      return htmlToImageLoader;
+    }
+
+    const SHARE_W = 1000, SHARE_H = 1000;
+    const SHARE_BG = '#1a1612';
+
+    async function downloadAsJPG(btn) {
+      const old = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '產生中…';
+
+      const root = document.getElementById('root');
+      const originalCss = root.style.cssText;
+
+      // Critical: keep #root *inside* the viewport so the browser actually
+      // paints it (off-screen elements get paint-skipped by some engines,
+      // which is why the previous clone approach produced all-black images).
+      // Stack a full-screen overlay on top so the user sees a flat dark
+      // panel during capture instead of the layout reflow.
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `position:fixed;inset:0;background:${SHARE_BG};z-index:99999;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font:14px -apple-system,system-ui,sans-serif;letter-spacing:.1em`;
+      overlay.textContent = '產生圖片中…';
+      document.body.appendChild(overlay);
+
+      try {
+        await ensureHtmlToImage();
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // Pin #root at 1000×1000 fixed top-left. It's still painted (covered
+        // by the overlay above), so SVG-foreignObject capture works.
+        root.style.cssText = `width:${SHARE_W}px;height:${SHARE_H}px;overflow:hidden;position:fixed;top:0;left:0;z-index:1`;
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        const dataUrl = await htmlToImage.toJpeg(root, {
+          quality: 0.95,
+          pixelRatio: 2,
+          backgroundColor: SHARE_BG,
+          width: SHARE_W,
+          height: SHARE_H,
+        });
+
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `宅民曆-${window.__PAYLOAD__.iso}-${window.__THEME__}.jpg`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+        btn.textContent = '✓ 已下載';
+        btn.classList.add('copied');
+      } catch (e) {
+        console.error(e);
+        btn.textContent = '✗ 失敗';
+      } finally {
+        root.style.cssText = originalCss;
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        setTimeout(() => {
+          btn.textContent = old;
+          btn.classList.remove('copied');
+          btn.disabled = false;
+        }, 1500);
+      }
+    }
   </script>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>

@@ -157,6 +157,35 @@
 .tt-code-line{color:var(--tt-mute);font-size:11px;padding:6px 12px;
   border-top:1px solid var(--tt-line);background:#070a07;display:flex;gap:14px}
 .tt-code-line span b{color:var(--tt-green);margin-right:6px}
+
+@media (max-width:820px){
+  .tt-grid{grid-template-columns:auto 1fr 1.2fr;gap:12px}
+  .tt-aside{min-width:90px;padding-right:8px}
+  .tt-date .day{font-size:110px}
+  .tt-bar{font-size:11px}
+  .tt-stage{padding:14px 16px 60px}
+  .tt-root::before{opacity:.45}
+  .tt-root::after{opacity:.6}
+}
+@media (max-width:480px){
+  .tt-grid{grid-template-columns:1fr;gap:10px}
+  .tt-aside{display:none}
+  .tt-date .day{font-size:80px}
+  .tt-date .ym,.tt-date .wd{font-size:11px}
+  .tt-bar{font-size:10.5px;padding:6px 10px;gap:8px}
+  .tt-bar .meta{display:none}
+  .tt-prompt{flex-wrap:wrap;font-size:11px;padding:8px 10px}
+  .tt-prompt .cmd{display:none}
+  .tt-window{margin-bottom:8px}
+  .tt-window .body{padding:10px 12px}
+  .tt-stage{padding:10px 12px 60px;gap:8px}
+  .tt-controls{gap:4px;font-size:10.5px;flex-wrap:wrap}
+  .tt-controls button,.tt-controls input{padding:5px 10px;font-size:10.5px}
+  .tt-root::before{opacity:.3}
+  .tt-root::after{opacity:.5}
+  .tt-chong{flex-wrap:wrap;font-size:10.5px;gap:6px}
+  .tt-omens{font-size:11.5px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);

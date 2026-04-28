@@ -121,6 +121,27 @@
   35%{transform:scaleY(.04);filter:brightness(2)}
   100%{opacity:1;transform:scaleY(1);filter:none}
 }
+
+@media (max-width:820px){
+  .tas-grid{grid-template-columns:1fr;gap:12px}
+  .tas-day-block pre{font-size:12px}
+  .tas-stage{padding:14px 16px 70px}
+  .tas-frame{font-size:12px;padding:10px 14px}
+  .tas-omen{font-size:12px;gap:10px}
+}
+@media (max-width:480px){
+  .tas-bar{font-size:10px;gap:8px;padding:6px 10px;flex-wrap:wrap}
+  .tas-stage{padding:10px 12px 60px;gap:10px}
+  .tas-frame{font-size:10.5px;padding:8px 10px;line-height:1.35}
+  .tas-grid{grid-template-columns:1fr;gap:10px;padding:0 12px}
+  .tas-day-block pre{font-size:10.5px;line-height:1}
+  .tas-warn,.tas-hours,.tas-quote{margin:0 12px;font-size:10.5px}
+  .tas-omens{font-size:12px}
+  .tas-omen .hd{font-size:11px}
+  .tas-omen ul{font-size:12px}
+  .tas-controls{flex-wrap:wrap;gap:4px;padding:0 12px 12px;font-size:10.5px}
+  .tas-controls button,.tas-controls input{padding:4px 10px;font-size:10.5px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);

@@ -138,6 +138,38 @@
 @keyframes tvs-left{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
 @keyframes tvs-right{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @keyframes tvs-fold{0%{opacity:0;transform:scaleY(.04)}40%{transform:scaleY(.04)}100%{opacity:1;transform:none}}
+
+@media (max-width:820px){
+  .tvs-sidebar{width:160px;font-size:11px}
+  .tvs-sidebar .row{padding:2px 12px 2px 10px;font-size:11px}
+  .tvs-sidebar .hd{font-size:10px;padding:6px 12px}
+  .tvs-activity{width:40px}
+  .tvs-editor .gutter{width:40px;font-size:11px}
+  .tvs-minimap{width:60px;font-size:2px}
+  .tvs-code{font-size:12px}
+  .tvs-tabs{font-size:11px}
+  .tvs-tabs .tab{padding:0 10px}
+  .tvs-breadcrumb{font-size:10px}
+  .tvs-controls{bottom:28px;right:14px;font-size:10.5px}
+  .tvs-controls button,.tvs-controls input{padding:4px 10px;font-size:10.5px}
+  .tvs-root{font-size:12px}
+  .tvs-status{font-size:10px}
+}
+@media (max-width:480px){
+  .tvs-sidebar{display:none}
+  .tvs-activity{display:none}
+  .tvs-tabs{display:none}
+  .tvs-breadcrumb{display:none}
+  .tvs-minimap{display:none}
+  .tvs-editor .gutter{width:32px;font-size:10px}
+  .tvs-code{font-size:11px;line-height:1.4;padding:4px 0 4px 4px}
+  .tvs-controls{bottom:20px;right:10px;padding:4px 6px;gap:4px;font-size:10px;flex-wrap:wrap}
+  .tvs-controls button,.tvs-controls input{padding:3px 8px;font-size:10px}
+  .tvs-root{font-size:11px}
+  .tvs-status{font-size:9px;gap:8px}
+  .tvs-status .seg{gap:3px;padding:0 2px}
+  .tvs-titlebar{height:24px;font-size:10px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);

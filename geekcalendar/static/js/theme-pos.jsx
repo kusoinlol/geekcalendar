@@ -392,6 +392,60 @@
   box-shadow:inset 0 0 0 1px var(--tpos-red)
 }
 .tpos-stamp .iso{font-size:9px;letter-spacing:.05em;display:block;text-align:center;font-style:normal;opacity:.85}
+
+@media (max-width:820px){
+  /* Downgrade strategy: ditch the fake POS-machine chrome (bezel / sidebar /
+   * menu grid / order panel / base / stand / system bar) — they only make
+   * sense at desktop. The modal alone IS the calendar's real content; on
+   * tablet/phone we promote it to fullscreen page content. */
+  .tpos-root{padding:0}
+  .tpos-machine{width:100%;height:100%;max-width:none}
+  .tpos-bezel{padding:0;border-radius:0;box-shadow:none;background:#fff}
+  .tpos-bezel::before,.tpos-bezel::after{display:none}
+  .tpos-base,.tpos-stand,.tpos-sysbar{display:none}
+  .tpos-screen{border-radius:0;box-shadow:none}
+  .tpos-screen::after{display:none}
+  .tpos-side,.tpos-menu,.tpos-order{display:none}
+  .tpos-stage{align-items:stretch;justify-content:stretch;pointer-events:auto}
+  .tpos-modal-wrap{width:100%;height:100%;max-width:none;max-height:none}
+  .tpos-modal{border-radius:0;box-shadow:none;width:100%;height:100%}
+  .tpos-modal::before{display:none}
+  .tpos-modal-hd{padding:8px 12px;font-size:11px;flex-wrap:wrap;gap:6px}
+  .tpos-modal-body{flex-direction:column;overflow-y:auto}
+  .tpos-modal-left{flex:none;padding:12px 14px;border-right:none}
+  .tpos-modal-right{width:100%;flex:none;padding:12px 14px;max-height:none;border-top:1px solid var(--tpos-line)}
+  .tpos-yiji{grid-template-columns:1fr;gap:10px}
+  .tpos-row{font-size:12px;grid-template-columns:64px 1fr}
+  .tpos-amount-row .val{font-size:28px}
+  .tpos-numpad{grid-template-columns:repeat(4,1fr);gap:3px}
+  .tpos-numpad .k{min-height:32px;font-size:11px}
+  .tpos-stamp{width:80px;height:80px;font-size:18px;top:50%;right:14px;transform:translateY(-50%) rotate(-12deg)}
+}
+@media (max-width:480px){
+  /* Tighter typography on the same downgrade — POS-machine chrome already
+   * hidden by the ≤820 block above. */
+  .tpos-modal-hd{padding:6px 10px;font-size:10px;gap:4px}
+  .tpos-modal-hd .seg .s{padding:3px 8px;font-size:10px}
+  .tpos-modal-hd .lbl{font-size:10px}
+  .tpos-modal-hd .pill{font-size:10px;padding:2px 8px}
+  .tpos-modal-left{padding:10px 12px}
+  .tpos-modal-right{padding:10px 12px}
+  .tpos-row{font-size:11px;grid-template-columns:54px 1fr;gap:5px}
+  .tpos-row .pill{font-size:10px;padding:2px 7px}
+  .tpos-row .input{font-size:11px;padding:3px 6px}
+  .tpos-yiji h4{font-size:11.5px}
+  .tpos-yiji ul{font-size:11px;line-height:1.4}
+  .tpos-amount-row .val{font-size:24px}
+  .tpos-amount-row .lbl{font-size:10.5px}
+  .tpos-amount-detail{font-size:10.5px}
+  .tpos-numpad{grid-template-columns:repeat(3,1fr);gap:3px}
+  .tpos-numpad .k{min-height:30px;font-size:10.5px;padding:5px 0}
+  .tpos-numpad .k .sub{display:none}
+  .tpos-pay-method{font-size:10px}
+  .tpos-pay-method .m{padding:4px 0}
+  .tpos-checkout-cta button{padding:8px;font-size:11px}
+  .tpos-stamp{width:60px;height:60px;font-size:14px}
+}
     `;
     const s = document.createElement('style');
     s.id = styleId; s.textContent = css; document.head.appendChild(s);
