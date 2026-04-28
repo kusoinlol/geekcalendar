@@ -1,24 +1,357 @@
 {
   "version": 1,
   "items": [
-    {"id": "deploy_prod_friday", "text": "週五下午部署 Production", "tags": ["deploy_prod"]},
-    {"id": "force_push_main", "text": "對 main / master 分支 force push", "tags": ["git_force_push"]},
-    {"id": "merge_no_review", "text": "未經 Review 直接合併 PR", "tags": ["review"]},
-    {"id": "deps_major_bump", "text": "在生產環境升級套件主版本", "tags": ["deps_major"]},
-    {"id": "alter_prod_schema", "text": "手動執行 Production DDL", "tags": ["db_schema"]},
-    {"id": "trust_pm_simple", "text": "輕信 PM 一句「這應該很簡單吧？」", "tags": ["pm_estimate"]},
-    {"id": "rm_rf_anything", "text": "在 Production 主機上 rm -rf", "tags": ["destructive"]},
-    {"id": "change_prod_env", "text": "手動改 Production 環境變數", "tags": ["prod_config"]},
-    {"id": "long_meeting", "text": "排超過 30 分鐘且無議程的全體大會", "tags": ["meeting_big"]},
-    {"id": "skip_tests", "text": "跳過測試直接合併", "tags": ["test"]},
-    {"id": "console_log_debug", "text": "用 console.log 除錯到天亮", "tags": ["bad_debug"]},
-    {"id": "refactor_friday", "text": "週五下班前發起大規模重構", "tags": ["refactor"]},
-    {"id": "deploy_before_holiday", "text": "連假前夕上線新功能", "tags": ["deploy_prod"]},
-    {"id": "ignore_warning", "text": "無視 Linter / Type Checker Warning", "tags": ["cleanup"]},
-    {"id": "hardcode_secret", "text": "Hardcode API Key 進原始碼", "tags": ["security"]},
-    {"id": "scope_creep", "text": "在 Sprint 中段加新需求", "tags": ["pm_estimate"]},
-    {"id": "blame_hunt", "text": "用 git blame 找戰犯", "tags": ["team_health"]},
-    {"id": "commit_typo_only", "text": "送出訊息為「Fixed stuff」的 commit", "tags": ["git_quality"]},
-    {"id": "accept_yes_install", "text": "在不熟的指令後直接按 y 安裝", "tags": ["caution"]}
+    {
+      "id": "overtime",
+      "text": "加班",
+      "tags": [
+        "work"
+      ]
+    },
+    {
+      "id": "all_nighter",
+      "text": "熬夜",
+      "tags": [
+        "health"
+      ]
+    },
+    {
+      "id": "friday_deploy",
+      "text": "週五部署",
+      "tags": [
+        "deploy"
+      ]
+    },
+    {
+      "id": "prod_deploy",
+      "text": "硬上線",
+      "tags": [
+        "deploy"
+      ]
+    },
+    {
+      "id": "hotfix_prod",
+      "text": "熱修正式",
+      "tags": [
+        "deploy"
+      ]
+    },
+    {
+      "id": "skip_review",
+      "text": "跳 Review",
+      "tags": [
+        "review"
+      ]
+    },
+    {
+      "id": "skip_tests",
+      "text": "跳測試",
+      "tags": [
+        "test"
+      ]
+    },
+    {
+      "id": "force_push",
+      "text": "Force Push",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "merge_conflict",
+      "text": "解衝突",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "bad_commit",
+      "text": "亂 Commit",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "push_main",
+      "text": "直推 Main",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "reset_hard",
+      "text": "Reset Hard",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "delete_branch",
+      "text": "刪錯分支",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "manual_sql",
+      "text": "手改 SQL",
+      "tags": [
+        "sql"
+      ]
+    },
+    {
+      "id": "delete_without_where",
+      "text": "忘記 WHERE",
+      "tags": [
+        "sql"
+      ]
+    },
+    {
+      "id": "alter_prod",
+      "text": "正式改表",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "drop_table",
+      "text": "Drop Table",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "truncate_table",
+      "text": "Truncate",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "no_backup",
+      "text": "不備份",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "restore_prod",
+      "text": "還原正式",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "clear_prod_cache",
+      "text": "清正式快取",
+      "tags": [
+        "cache"
+      ]
+    },
+    {
+      "id": "restart_prod",
+      "text": "重啟正式",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "ssh_prod",
+      "text": "SSH 正式",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "edit_prod_file",
+      "text": "正式改檔",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "rm_rf",
+      "text": "rm -rf",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "chmod_777",
+      "text": "chmod 777",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "open_firewall",
+      "text": "開防火牆",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "commit_env",
+      "text": "Commit .env",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "hardcode_key",
+      "text": "寫死 Key",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "share_password",
+      "text": "傳密碼",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "ignore_alert",
+      "text": "無視告警",
+      "tags": [
+        "monitoring"
+      ]
+    },
+    {
+      "id": "mute_alert",
+      "text": "靜音監控",
+      "tags": [
+        "monitoring"
+      ]
+    },
+    {
+      "id": "delete_logs",
+      "text": "刪 Log",
+      "tags": [
+        "logs"
+      ]
+    },
+    {
+      "id": "console_debug",
+      "text": "亂印 Log",
+      "tags": [
+        "debug"
+      ]
+    },
+    {
+      "id": "blind_refactor",
+      "text": "盲目重構",
+      "tags": [
+        "refactor"
+      ]
+    },
+    {
+      "id": "big_refactor",
+      "text": "大重構",
+      "tags": [
+        "refactor"
+      ]
+    },
+    {
+      "id": "change_architecture",
+      "text": "換架構",
+      "tags": [
+        "architecture"
+      ]
+    },
+    {
+      "id": "upgrade_major",
+      "text": "升主版本",
+      "tags": [
+        "deps"
+      ]
+    },
+    {
+      "id": "install_random_pkg",
+      "text": "亂裝套件",
+      "tags": [
+        "deps"
+      ]
+    },
+    {
+      "id": "trust_ai_code",
+      "text": "全信 AI",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "run_ai_sql",
+      "text": "執行 AI SQL",
+      "tags": [
+        "ai",
+        "sql"
+      ]
+    },
+    {
+      "id": "paste_secret_ai",
+      "text": "貼密鑰給 AI",
+      "tags": [
+        "ai",
+        "security"
+      ]
+    },
+    {
+      "id": "long_meeting",
+      "text": "開長會",
+      "tags": [
+        "meeting"
+      ]
+    },
+    {
+      "id": "no_agenda_meeting",
+      "text": "無議程會議",
+      "tags": [
+        "meeting"
+      ]
+    },
+    {
+      "id": "last_minute_change",
+      "text": "臨時改需求",
+      "tags": [
+        "pm"
+      ]
+    },
+    {
+      "id": "scope_creep",
+      "text": "順便需求",
+      "tags": [
+        "pm"
+      ]
+    },
+    {
+      "id": "verbal_spec",
+      "text": "口頭需求",
+      "tags": [
+        "pm"
+      ]
+    },
+    {
+      "id": "promise_deadline",
+      "text": "亂承諾",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "estimate_fast",
+      "text": "秒估工時",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "say_should_be_fine",
+      "text": "說應該沒事",
+      "tags": [
+        "superstition"
+      ]
+    }
   ]
 }

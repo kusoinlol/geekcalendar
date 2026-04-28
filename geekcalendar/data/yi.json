@@ -1,24 +1,355 @@
 {
   "version": 1,
   "items": [
-    {"id": "deploy_staging", "text": "部署到 Staging 環境", "tags": ["deploy_staging"]},
-    {"id": "refactor_small", "text": "重構小範圍函式", "tags": ["refactor"]},
-    {"id": "write_tests", "text": "撰寫單元測試", "tags": ["test"]},
-    {"id": "code_review", "text": "進行 Code Review", "tags": ["review"]},
-    {"id": "update_docs", "text": "更新技術文件", "tags": ["docs"]},
-    {"id": "clean_logs", "text": "清理多餘的 console.log", "tags": ["cleanup"]},
-    {"id": "deps_minor_bump", "text": "升級套件小版本", "tags": ["deps_minor"]},
-    {"id": "branch_cleanup", "text": "清理本地過期 git branch", "tags": ["git_cleanup"]},
-    {"id": "leave_on_time", "text": "準時下班", "tags": ["work_hours"]},
-    {"id": "drink_coffee", "text": "喝一杯好咖啡", "tags": ["coffee"]},
-    {"id": "fix_small_bug", "text": "修復標記為 good first issue 的 bug", "tags": ["bugfix_small"]},
-    {"id": "add_logging", "text": "為關鍵流程加上 structured log", "tags": ["observability"]},
-    {"id": "explore_lib", "text": "研究一個新套件", "tags": ["learning"]},
-    {"id": "rename_var", "text": "改善變數命名", "tags": ["refactor_naming"]},
-    {"id": "one_on_one", "text": "與主管或同事 1-on-1", "tags": ["meeting_1on1"]},
-    {"id": "rotate_secrets", "text": "輪換 API Token / Secret", "tags": ["security"]},
-    {"id": "backup_db", "text": "驗證資料庫備份可還原", "tags": ["db_backup"]},
-    {"id": "early_pr", "text": "早早開出 Draft PR 收 feedback", "tags": ["pr_workflow"]},
-    {"id": "rest_break", "text": "離開螢幕走一走", "tags": ["health"]}
+    {
+      "id": "refactor",
+      "text": "重構",
+      "tags": [
+        "code"
+      ]
+    },
+    {
+      "id": "write_tests",
+      "text": "補測試",
+      "tags": [
+        "test"
+      ]
+    },
+    {
+      "id": "code_review",
+      "text": "Code Review",
+      "tags": [
+        "review"
+      ]
+    },
+    {
+      "id": "clean_branch",
+      "text": "清分支",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "merge_pr",
+      "text": "合併 PR",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "open_pr",
+      "text": "開 PR",
+      "tags": [
+        "git"
+      ]
+    },
+    {
+      "id": "update_docs",
+      "text": "補文件",
+      "tags": [
+        "docs"
+      ]
+    },
+    {
+      "id": "write_readme",
+      "text": "寫 README",
+      "tags": [
+        "docs"
+      ]
+    },
+    {
+      "id": "fix_bug",
+      "text": "修 Bug",
+      "tags": [
+        "bug"
+      ]
+    },
+    {
+      "id": "small_hotfix",
+      "text": "小修補",
+      "tags": [
+        "hotfix"
+      ]
+    },
+    {
+      "id": "deploy_staging",
+      "text": "上 Staging",
+      "tags": [
+        "deploy"
+      ]
+    },
+    {
+      "id": "rollback_drill",
+      "text": "演練回滾",
+      "tags": [
+        "deploy"
+      ]
+    },
+    {
+      "id": "backup_db",
+      "text": "備份資料",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "check_backup",
+      "text": "驗證備份",
+      "tags": [
+        "database"
+      ]
+    },
+    {
+      "id": "optimize_query",
+      "text": "優化 SQL",
+      "tags": [
+        "sql"
+      ]
+    },
+    {
+      "id": "add_index",
+      "text": "補索引",
+      "tags": [
+        "sql"
+      ]
+    },
+    {
+      "id": "clean_logs",
+      "text": "清 Log",
+      "tags": [
+        "logs"
+      ]
+    },
+    {
+      "id": "check_logs",
+      "text": "看 Log",
+      "tags": [
+        "logs"
+      ]
+    },
+    {
+      "id": "add_logging",
+      "text": "補 Log",
+      "tags": [
+        "logs"
+      ]
+    },
+    {
+      "id": "check_monitoring",
+      "text": "看監控",
+      "tags": [
+        "monitoring"
+      ]
+    },
+    {
+      "id": "fix_alert",
+      "text": "修告警",
+      "tags": [
+        "monitoring"
+      ]
+    },
+    {
+      "id": "rotate_secret",
+      "text": "換 Token",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "check_permission",
+      "text": "查權限",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "patch_security",
+      "text": "補漏洞",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "id": "update_package",
+      "text": "升小版",
+      "tags": [
+        "deps"
+      ]
+    },
+    {
+      "id": "clean_cache",
+      "text": "清快取",
+      "tags": [
+        "cache"
+      ]
+    },
+    {
+      "id": "warm_cache",
+      "text": "暖快取",
+      "tags": [
+        "cache"
+      ]
+    },
+    {
+      "id": "check_queue",
+      "text": "看 Queue",
+      "tags": [
+        "queue"
+      ]
+    },
+    {
+      "id": "restart_service",
+      "text": "重啟服務",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "check_disk",
+      "text": "查磁碟",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "check_memory",
+      "text": "查記憶體",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "clean_tmp",
+      "text": "清暫存",
+      "tags": [
+        "server"
+      ]
+    },
+    {
+      "id": "organize_server_room",
+      "text": "整理機房",
+      "tags": [
+        "infra"
+      ]
+    },
+    {
+      "id": "rewire_cables",
+      "text": "重新佈線",
+      "tags": [
+        "infra"
+      ]
+    },
+    {
+      "id": "label_cables",
+      "text": "貼線標",
+      "tags": [
+        "infra"
+      ]
+    },
+    {
+      "id": "clean_desk",
+      "text": "整理座位",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "clean_desktop",
+      "text": "整理桌面",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "delete_files",
+      "text": "刪廢檔",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "clean_downloads",
+      "text": "清下載夾",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "organize_notes",
+      "text": "整理筆記",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "drink_coffee",
+      "text": "喝咖啡",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "tea_break",
+      "text": "喝下午茶",
+      "tags": [
+        "daily"
+      ]
+    },
+    {
+      "id": "drink_water",
+      "text": "喝水",
+      "tags": [
+        "health"
+      ]
+    },
+    {
+      "id": "stretch",
+      "text": "伸展",
+      "tags": [
+        "health"
+      ]
+    },
+    {
+      "id": "walk_around",
+      "text": "走一走",
+      "tags": [
+        "health"
+      ]
+    },
+    {
+      "id": "one_on_one",
+      "text": "1-on-1",
+      "tags": [
+        "meeting"
+      ]
+    },
+    {
+      "id": "standup",
+      "text": "站會",
+      "tags": [
+        "meeting"
+      ]
+    },
+    {
+      "id": "sync_spec",
+      "text": "對需求",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "split_task",
+      "text": "拆任務",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "id": "leave_on_time",
+      "text": "準時下班",
+      "tags": [
+        "life"
+      ]
+    }
   ]
 }

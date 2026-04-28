@@ -41,6 +41,9 @@ nosetests.xml
 handoff/
 update2/
 
+# Source data files that are imported into JSON pools (it.json/yi.json/ji.json)
+joke.txt
+
 # Local virtualenv
 .venv/
 
